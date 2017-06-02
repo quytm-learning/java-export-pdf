@@ -7,7 +7,6 @@ public class Main {
 
     public static void main(String[] args) throws Exception {
         Exporter exporter = new Exporter();
-//        exporter.export();
-        exporter.exportLikeMSkips();
+        exporter.export();
     }
 }

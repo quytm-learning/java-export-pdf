@@ -21,41 +21,15 @@ import java.util.Map;
  */
 public class Exporter {
 
-    public void export() throws Exception {
-
-        Configuration cfg = new Configuration();
-//        cfg.setIncompatibleImprovements(new Version(2, 3, 20));
-//        cfg.setDefaultEncoding("UTF-8");
-//        cfg.setLocale(Locale.US);
-//        cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
-
-        cfg.setDirectoryForTemplateLoading(new File(getClass().getResource("/").getFile()));
+    public void export() throws Exception{
+        Configuration cfg = configuration();
+        Map<String, Object> input = getData();
         Template template = cfg.getTemplate("template.ftl");
 
-        // Set data to Map
-        Map<String, Object> input = new HashMap<String, Object>();
-        input.put("title", "Tittle Template");
-        input.put("user", new UserInfo("Trần Minh Quý", "this is favorite", "this is activity"));
-
-        // Write to file .html
-        Writer fileWriter = new FileWriter(new File("output.html"));
-        try {
-            template.process(input, fileWriter);
-        } finally {
-            fileWriter.close();
-
-
-            Document document = new Document();
-            PdfWriter writer = PdfWriter.getInstance(document, new FileOutputStream("pdf.pdf"));
-            document.open();
-            XMLWorkerHelper.getInstance().parseXHtml(writer, document, new FileInputStream(new File(".").getCanonicalPath() + "/output.html"));
-            document.close();
-
-            System.out.println( "PDF Created!" );
-        }
+        convertToPdf(template, input);
     }
 
-    public void exportLikeMSkips() throws Exception{
+    private Configuration configuration() throws IOException {
         Configuration cfg = new Configuration();
 //        cfg.setIncompatibleImprovements(new Version(2, 3, 20));
 //        cfg.setDefaultEncoding("UTF-8");
@@ -63,14 +37,19 @@ public class Exporter {
 //        cfg.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
 
         cfg.setDirectoryForTemplateLoading(new File(getClass().getResource("/").getFile()));
-        Template template = cfg.getTemplate("template.ftl");
 
-        // Set data to Map
+        return cfg;
+    }
+
+    private Map<String, Object> getData() {
         Map<String, Object> input = new HashMap<String, Object>();
         input.put("title", "Tittle Template");
         input.put("user", new UserInfo("Trần Minh Quý", "this is favorite", "this is activity"));
 
-        // Write to file .html
+        return input;
+    }
+
+    private void convertToPdf(Template template, Map<String, Object> input) throws Exception {
         File htmlTemp = new File("output.html");
         Writer fileWriter = new FileWriter(htmlTemp);
         try {
